@@ -1,4 +1,5 @@
-name: Build and Deploy
+name: Build and Deploy of Static Site
+
 on:
   push:
 
@@ -7,9 +8,10 @@ permissions:
   pages: write
 
 jobs:
-  build:
-    name: Build and Deploy
+  builddeploy:
+    name: Build and Install
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -25,9 +27,23 @@ jobs:
       - name: Build
         run: mkdocs build --clean
 
+      - name: Install ESLint
+        run: npm install eslint
+
+      - name: Install ESLint dependencies (globals)
+        run: npm install globals
+        
+      - name: Install ESLint dependencies (@eslint/js)
+        run: npm install @eslint/js
+        
+      - name: Install ESLint dependencies (@stylistic/eslint-plugin-js)
+        run: npm install @stylistic/eslint-plugin-js
+
+      - name: Install ESLint dependencies (eslint-plugin-html)
+        run: npm install eslint-plugin-html
+
+      - name: Using ESLint
+        run: npx eslint --fix --debug 
+
       - name: Deploy
         run: mkdocs gh-deploy --force
-        env:
-          REPO_KEY: ${{ secrets.ACTIONS_TOKEN }}
-          CONFIG_FILE: mkdocs.yml
-          USERNAME: github-actions[bot]
